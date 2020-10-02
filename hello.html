@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>hello</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <!-- <link rel='stylesheet' type='text/css' media='screen' href='main.css'> -->
+    <!-- <script src='main.js'></script> -->
+    
+    <!-- Get libraries from unpkg -->
+    <script src='https://unpkg.com/d3@6.2.0/dist/d3.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tonaljs/tonal/browser/tonal.min.js"></script>
+</head>
+<body>
+    <div class='container'></div>
+<script>
+  console.log('Tonal', Tonal)
+
+  const scaleNames = Tonal.Scale.names()
+  const note = 'C'
+
+  console.log(scaleNames)
+
+  const scaleNotes = scaleNames.map(name => {
+    return Tonal.Scale.get(`${note} ${name}`).notes
+  })
+
+
+
+  
+</script>
+
+</body>
+</html>
