@@ -20,12 +20,18 @@
   const scaleNames = Tonal.Scale.names()
   const note = 'C'
 
-  console.log(scaleNames)
-
   const scaleNotes = scaleNames.map(name => {
-    return Tonal.Scale.get(`${note} ${name}`).notes
+    // return {
+    //   name: name,
+    //   notes: Tonal.Scale.get(`${note} ${name}`).notes }
+
+    return Tonal.Scale.get(`${note} ${name}`)
+
   })
 
+    
+
+  console.log(scaleNotes)
 
 
   
