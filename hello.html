@@ -11,31 +11,14 @@
     <!-- Get libraries from unpkg -->
     <script src='https://unpkg.com/d3@6.2.0/dist/d3.min.js'></script>
     <script src="https://cdn.jsdelivr.net/npm/@tonaljs/tonal/browser/tonal.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script>
+
+    <!-- tone midi -->
+    <script src="https://unpkg.com/@tonejs/midi"></script>
 </head>
 <body>
     <div class='container'></div>
-<script>
-  console.log('Tonal', Tonal)
-
-  const scaleNames = Tonal.Scale.names()
-  const note = 'C'
-
-  const scaleNotes = scaleNames.map(name => {
-    // return {
-    //   name: name,
-    //   notes: Tonal.Scale.get(`${note} ${name}`).notes }
-
-    return Tonal.Scale.get(`${note} ${name}`)
-
-  })
-
-    
-
-  console.log(scaleNotes)
-
-
-  
-</script>
-
+    <script src="./script.js"></script>
+    <script src="./demo.js"></script>
 </body>
 </html>

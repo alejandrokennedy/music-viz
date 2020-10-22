@@ -1,8 +1,29 @@
 {
-  "Links": [
+  "Links": [ 
     {
       "title" : "A Brief Introduction to Pitch-Class Set Analysis",
       "url" : "https://www.mta.ca/pc-set/pc-set_new/pages/introduction/toc.html"
+    },
+    {
+      "title" : "Music Net (.mid files downloaded here)",
+      "url" : "https://homes.cs.washington.edu/~thickstn/musicnet.html"
+    }
+  ],
+  "Resources": [
+    {
+      "Set operations": "https://observablehq.com/@d3/set-operations"
+    },
+    {
+      "Free Code Camp tf tutorial": "https://www.freecodecamp.org/news/get-to-know-tensorflow-js-in-7-minutes-afcd0dfd3d2f/"
+    },
+    {
+      "TensorFlow.js API": "https://js.tensorflow.org/api/latest/"
+    },
+    {
+      "Package used to convert MIDIs into JSONs": "https://github.com/Tonejs/Midi"
+    },
+    {
+      "Coding Train Tensorflow Video": "https://www.youtube.com/watch?v=Qt3ZABW5lD0"
     }
   ]
 }
