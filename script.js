@@ -13,11 +13,13 @@
 
 const container = d3.select('#container') // creates a d3 selection (the html element is in .node())
 
+const bounds = container.node().getBoundingClientRect()
+
 // SET UP VARIABLES
 
 const margin = {top: 25, right: 20, bottom: 35, left: 40}
-const width = 900
-const height = 600
+const width = bounds.width
+const height = bounds.height
 
 // SET UP CHART SPACE
 const svg = container.append('svg')
@@ -25,14 +27,14 @@ const svg = container.append('svg')
   .attr('viewBox', [0, 0, width, height])
   // .attr('width', width)
   // .attr('height', height)
-  .style('border', '2px solid magenta')
+  // .style('border', '2px solid magenta')
 
 // DATA
 const scaleNames = Tonal.Scale.names()
 const note = 'C'
 const scalesInfo = scaleNames.map(name => Tonal.Scale.get(`${note} ${name}`))
 scalesInfo.map(d => Object.assign(d, {semitones: d.intervals.map(d => Tonal.Interval.semitones(d))}))
-console.log(scalesInfo)
+// console.log('scalesInfo', scalesInfo)
 
 // SCALES
 const xScale = d3.scaleBand()
