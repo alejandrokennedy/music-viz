@@ -14,10 +14,9 @@ const container = d3.select('#container') // creates a d3 selection (the html el
 const bounds = container.node().getBoundingClientRect()
 
 // SET UP VARIABLES
-
-const margin = {top: 25, right: 20, bottom: 35, left: 150}
-const width = bounds.width
-const height = bounds.height
+const margin = {top: 150, right: 20, bottom: 150, left: 150}
+const width = bounds.width // window.innerWidth * 0.8 
+const height = 1200;
 
 // SET UP CHART SPACE
 const svg = container.append('svg')
@@ -34,7 +33,22 @@ const scalesInfo = scaleNames.map(name => Tonal.Scale.get(`${note} ${name}`))
 // Calculate semitones from intervals for each scale type
 scalesInfo.map(d => Object.assign(d, {semitones: d.intervals.map(d => Tonal.Interval.semitones(d))}))
 
-console.log('scalesInfo', scalesInfo)
+console.table('scalesInfo', scalesInfo)
+
+const semitoneNames = {
+  0: "P1 / d2",
+  1: "m2 / A1",
+  2: "M2 / d3",
+  3: "m3 / A2",
+  4: "M3 / d4",
+  5: "P4 / A3",
+  6: "d5 / A4",
+  7: "P5 / d6",
+  8: "m6 / A5",
+  9: "M6 / d7",
+  10: "m7 / A6",
+  11: "M7 / d8"
+}
 
 // SCALES
 const xScale = d3.scalePoint() // d3.scaleBand()
@@ -52,76 +66,119 @@ const colourScale = d3.scaleSequential()
 
 
 // AXES
-const xAxis = g => g
-    .attr("transform", `translate(0,${height - margin.bottom})`)
-    .call(d3.axisBottom(xScale)
-      .tickFormat(d => d + 1) // add 1 to tick labels
-    )
-    .call(g => {
-      g.select(".domain").remove() // remove main axis line
-      g.selectAll(".tick line").remove() // remove tick lines
-    })
+const xAxisFormat = (g, pos) => g
+  .call(g => {
+    g.select(".domain").remove() // remove main axis line
+    g.selectAll(".tick line").remove() // remove tick lines
+  })
+  .call(g => {
+    g.selectAll("text")
+      .attr('class', 'semitone label')
+  })
+  .call(g => { // add annotation to each tick
+    g.selectAll(".tick")
+      .append("text")
+        .attr('fill', 'black')
+        .attr('class', 'interval label')
+        .attr('y', pos == 'top' ? '-1.5rem' : '1.8rem')
+        .text(d => semitoneNames[d])
+  })
+
+const xAxisBottom = g => g
+  .attr("transform", `translate(0,${height - margin.bottom})`)
+  .call(d3.axisBottom(xScale)
+    // .tickFormat(d => d + 1) // add 1 to tick labels
+  )
+  .call(xAxisFormat)
+
+const xAxisTop = g => g
+  .attr("transform", `translate(0,${margin.top})`)
+  .call(d3.axisTop(xScale))
+  .call(xAxisFormat, 'top')
+
+// & axis titles
+const xTitle = (g, pos) => g
+  .append('text')
+    .attr('text-anchor', 'middle')
+    .attr('fill', 'black')
+    .attr('class', 'semitone title')
+    .attr('x', (width)/2 + margin.left - margin.right)
+    .attr('y', pos == 'top' ? -60 : 70)
+    .text('Semitones above the tonic')
+
+const xSubtitle = (g, pos) => g
+    .append('text')
+    .attr('text-anchor', 'middle')
+    .attr('fill', 'black')
+    .attr('class', 'interval title')
+    .attr('x', (width)/2 + margin.left - margin.right)
+    .attr('y', pos == 'top' ? -75 : 85)
+    .text('Interval')
 
 const yAxis = g => g
-    .attr("transform", `translate(${margin.left},0)`)
-    .call(d3.axisLeft(yScale)
-      .tickSize(-width + margin.left + margin.right))
-    .call(g => {
-      g.select(".domain").remove() // remove main axis line
-      g.selectAll(".tick line") // change tick length and opacity
-      .attr("stroke-opacity", 0.2)
-      .attr("stroke-dasharray", "4,2")
-      g.selectAll(".tick text") // nudge labels over
-      .attr("dx", -4)
-    })
+  .attr("transform", `translate(${margin.left},0)`)
+  .call(d3.axisLeft(yScale)
+    .tickSize(-width + margin.left + margin.right))
+  .call(g => {
+    g.select(".domain").remove() // remove main axis line
+    g.selectAll(".tick line") // change tick length and opacity
+    .attr("stroke-opacity", 0.2)
+    .attr("stroke-dasharray", "4,2")
+    g.selectAll(".tick text") // nudge labels over
+    .attr("dx", -4)
+  })
+  .selectAll("text")
+  .style("font-style", "oblique")
 
-svg.append("g").call(xAxis);
-svg.append("g").call(yAxis);
+const yTitle = g => g
+  .append('text')
+    .attr('text-anchor', 'end')
+    .attr('fill', 'black')
+    .attr('x', -10)
+    .attr('y', margin.top - 10)
+    .attr('class', 'scale title')
+    .text('scale type')
+
+const mainTitle = g => g
+  .append('text')
+    .attr('class', 'chart-title')
+    .attr('fill', 'grey')
+    .attr('font-size', '3rem')
+    .attr('font-family', 'sans-serif')
+    .attr('text-anchor', 'start')
+    .attr('x', 0)
+    .attr('y', margin.top/2)
+    .text('notes on a scale')
+
+// Call axes above
+svg.append("g")
+  .call(xAxisBottom)
+  .call(xTitle)
+  .call(xSubtitle)
+
+svg.append("g")
+  .call(xAxisTop)
+  // .call(xTitle, 'top')
+  // .call(xSubtitle, 'top')
+
+svg.append("g")
+  .call(yAxis)
+  .call(yTitle)
+
+svg.call(mainTitle)
 
 // VIZ
-const g = svg.selectAll('.scaleGroup') // Create scale groups
-      .data(scalesInfo)
-      .join('g')
-      .attr('class', 'scaleGroup')
-      .attr('transform', d => `translate(0, ${yScale(d.type)})`)
-      
-const circles = g.selectAll('circle') // Create a circle for each semitone in the scale
-      .data(d => d.semitones)
-      .join('circle')
-      .attr("cx", note => xScale(note))
-      .attr("cy", 0)
-      .attr("fill", note => colourScale(note))
-      .attr("fill-opacity", 0.5)
-      .attr("r", 5)
-
-
-    
-
-
-      
-// // Synthesize information for plots
-// const plotInfo = scalesInfo.map(d => ({
-//   yPos: yScale(d.type),
-//   xPos: d.semitones.map(i => xScale(i)),
-//   colours: d.semitones.map(i => colourScale(i))
-// })
-// )
-
-// // Create groups from elements in plotInfo (corresponds to scale types)
-// const g = svg.selectAll('g')
-// .data(plotInfo).enter().append('g')
-
-// // Create circles for each element in array in plotInfo (corresponds to semitones in that scale)
-// const circles = g.selectAll('circle')
-// .data(d => {
-//         return d['xPos'].map((x,i) => {
-//           return Object.assign({}, d, {xPos: d.xPos[i], colour: d.colours[i]})
-//         })
-//       }).enter().append('circle')
-// .attr("cx", d => d.xPos)
-// .attr("cy", d => d.yPos)
-// .attr("fill", d => d.colour)
-// .attr("fill-opacity", 0.5)
-// .attr("r", 5)
-
-
+const g = svg.selectAll('.scaleGroup') // Create scale groups and move them into position
+  .data(scalesInfo)
+  .join('g')
+  .attr('class', 'scaleGroup')
+  .attr('transform', d => `translate(0, ${yScale(d.type)})`)
+  
+const circles = g.selectAll('circle') // Create a circle for each semitone in the scale (group)
+  .data(d => d.semitones)
+  .join('circle')
+  .attr("cx", note => xScale(note))
+  .attr("cy", 0)
+  .attr("fill", note => colourScale(note))
+  .attr("fill-opacity", 0.5)
+  .attr("r", 5)
