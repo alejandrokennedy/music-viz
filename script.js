@@ -33,8 +33,6 @@ const scalesInfo = scaleNames.map(name => Tonal.Scale.get(`${note} ${name}`))
 // Calculate semitones from intervals for each scale type
 scalesInfo.map(d => Object.assign(d, {semitones: d.intervals.map(d => Tonal.Interval.semitones(d))}))
 
-console.table('scalesInfo', scalesInfo)
-
 const semitoneNames = {
   0: "P1 / d2",
   1: "m2 / A1",
@@ -134,10 +132,10 @@ const yTitle = g => g
   .append('text')
     .attr('text-anchor', 'end')
     .attr('fill', 'black')
-    .attr('x', -10)
+    .attr('x', -30)
     .attr('y', margin.top - 10)
     .attr('class', 'scale title')
-    .text('scale type')
+    .text('↓ scale type')
 
 const mainTitle = g => g
   .append('text')
@@ -175,10 +173,46 @@ const g = svg.selectAll('.scaleGroup') // Create scale groups and move them into
   .attr('transform', d => `translate(0, ${yScale(d.type)})`)
   
 const circles = g.selectAll('circle') // Create a circle for each semitone in the scale (group)
-  .data(d => d.semitones)
+  .data(d => {
+    // console.log(d)
+    // console.log(d.semitones)
+
+    const noteDataArr = []
+    d.semitones.forEach((semitone, i) => {
+      newObj = {}
+      newObj.semitone = semitone
+      newObj.note = d.notes[i]
+      noteDataArr.push(newObj)
+    })
+
+    // console.log(noteDataArr)
+    
+    return noteDataArr
+    // return d.semitones
+  })
   .join('circle')
-  .attr("cx", note => xScale(note))
+  .attr("cx", note => xScale(note.semitone))
   .attr("cy", 0)
-  .attr("fill", note => colourScale(note))
+  .attr("fill", note => colourScale(note.semitone))
   .attr("fill-opacity", 0.5)
   .attr("r", 5)
+  // .on('mouseover', function() {
+  //   // console.log('data', d3.select(this).data()[0].note)
+  //   playSomething(this)
+  //   // playSomething()
+  // })
+  .on('mouseover', handleMouseover)
+
+let synth;
+
+function handleMouseover(event) {
+  console.log(event)
+  let element = event.target
+  const note = d3.select(element).data()[0].note+"4"
+  playSomething(note)
+}
+
+function playSomething(note) {
+  if (!synth) synth = new Tone.Synth().toDestination()
+  synth.triggerAttackRelease(note, "8n");
+}
